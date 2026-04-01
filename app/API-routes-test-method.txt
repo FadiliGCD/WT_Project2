@@ -1,0 +1,7 @@
+use Thunder Client
+1)install thunder client extension in VS code
+2)click thunder client icon
+3)choose mothed (ex: POST or GET etc..)
+4)put the URL (inteded rout to test)
+5)open JSON and add the comand
+6)click send and check the result

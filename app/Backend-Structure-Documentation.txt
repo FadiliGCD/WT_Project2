@@ -1,0 +1,59 @@
+server/
+│
+├── src/
+│   ├── models/
+│   ├── routes/
+│   ├── middleware/
+│   ├── db.js
+│   └── index.js
+│
+├── .env
+├── package.json
+└── node_modules/
+
+src/ - Application Source Code: (This folder separates the main logic from configuration files.)
+The src folder contains all the core backend source code of the application.
+It includes server configuration, database connection, routes, middleware, and data models.
+
+
+models/ – Database Models
+The models folder contains the Mongoose schemas and models used to represent the application's data in MongoDB.
+Each model defines the structure of a document stored in the database.
+User.js: (the user model) Stores user account information such as: username ,email ,password hash, creation date
+
+
+routes/ – API Routes (routes/ defines how the server respond to frontend requestes)
+The routes folder contains all Express route handlers for the application's API.
+/api/auth/register  --> auth.routes.js
+/api/auth/login    --> auth.routes.js
+/api/recipes
+/api/mealplan
+
+
+middleware/ – Custom Middleware
+The middleware folder contains functions that run between receiving a request and sending a response.
+(logging, quthentication, authorization etc...)
+
+
+db.js – Database Connection
+The db.js file manages the connection between the application and the MongoDB database.
+uses mongoose to establish a connection using the connection string stored in the .env file.
+
+index.js – Main Server Entry Point
+Initialize Express
+Load environment variables
+Connect MongoDB
+Register routes
+Start API server
+server listens on port 5000 
+
+.env – Environment Variables
+stores configuration values
+
+
+package.json – Project Configuration
+The package.json file defines the backend project's configuration.
+
+
+node_modules/ – Installed Dependencies
+third-party libraries

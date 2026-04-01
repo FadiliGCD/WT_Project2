@@ -1,0 +1,17 @@
+*initial set up for server/ (BACKEND)
+    ()
+    npm init -y
+    npm i express mongoose cors dotenv bcrypt jsonwebtoken
+    npm i -D nodemon
+    npm install mongodb
+then "npm run dev" when ready
+
+
+*Mongo DB URL & setup:
+location: app/server/.env
+MONGO_URI= mongodb+srv://almanyfadilox_db_user:anY1cQaIWopHT2CF@wt.u8xwjw8.mongodb.net/?appName=WT
+dbusername: almanyfadilox_db_user
+password:anY1cAdIWopHT2C
+
+*MongoDB setup:
+We used MongoDB Atlas as its cloud to prevent conflict errors from using a local DB between the team
