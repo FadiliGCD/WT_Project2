@@ -9,3 +9,17 @@ router.post('/', async (req, res) => {
   res.json(user);
 });
 
+//Read all users
+router.get('/', async (req, res) => {
+  const users = await User.find();
+  res.json(users);
+});
+
+//Reads a user by their ID
+router.get('/:id', async (req, res) => {
+  const user = await User.findById(req.params.id);
+  res.json(user);
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+});
