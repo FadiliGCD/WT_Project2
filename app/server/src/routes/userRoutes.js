@@ -41,3 +41,5 @@ router.delete("/:id", async (req, res) => {
     }
     res.json({ message: "User deleted" });
     });
+
+    module.exports = router;
