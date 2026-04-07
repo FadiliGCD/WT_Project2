@@ -1,0 +1,64 @@
+<%# Weekly grid: assign recipe per day via POS clear via DELETE form %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title><%= title %></title>
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <% if (flash && flash.messages && flash.messages.length) { %>
+    <ul>
+      <% flash.messages.forEach(function (m) { %><li><%= m %></li><% }); %>
+    </ul>
+  <% } %>
+  <h1>Meal plan</h1>
+  <form method="get" action="/meal-plan">
+    <label>Week containing <input type="date" name="week" value="<%= weekStartInput %>" /></label>
+    <button type="submit">Go</button>
+  </form>
+  <p>Week starting <%= weekStartInput %> (Monday).</p>
+  <table border="1" cellpadding="4">
+    <thead>
+      <tr>
+        <th></th>
+        <% dayLabels.forEach(function (d) { %><th><%= d %></th><% }); %>
+      </tr>
+    </thead>
+    <tbody>
+      <% mealSlots.forEach(function (slot) { %>
+        <tr>
+          <th><%= slot %></th>
+          <% for (let day = 0; day < 7; day++) { %>
+            <% const key = day + '-' + slot; const cell = grid[key]; %>
+            <td>
+              <% if (cell && cell.recipe) { %>
+                <a href="/recipes/<%= cell.recipe._id %>"><%= cell.recipe.title %></a>
+                <form action="/meal-plan?_method=DELETE" method="post" style="display:inline;">
+                  <input type="hidden" name="weekStart" value="<%= weekStartInput %>" />
+                  <input type="hidden" name="dayIndex" value="<%= day %>" />
+                  <input type="hidden" name="mealSlot" value="<%= slot %>" />
+                  <button type="submit">Clear</button>
+                </form>
+              <% } else { %>
+                <form action="/meal-plan" method="post">
+                  <input type="hidden" name="weekStart" value="<%= weekStartInput %>" />
+                  <input type="hidden" name="dayIndex" value="<%= day %>" />
+                  <input type="hidden" name="mealSlot" value="<%= slot %>" />
+                  <select name="recipeId" required>
+                    <option value="">— pick recipe —</option>
+                    <% recipeChoices.forEach(function (r) { %>
+                      <option value="<%= r._id %>"><%= r.title %></option>
+                    <% }); %>
+                  </select>
+                  <button type="submit">Set</button>
+                </form>
+              <% } %>
+            </td>
+          <% } %>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</body>
+</html>

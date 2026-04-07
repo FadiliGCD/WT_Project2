@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title><%= title %></title>
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <h1><%= title %></h1>
+  <% if (errors && errors.length) { %>
+    <ul>
+      <% errors.forEach(function (msg) { %><li><%= msg %></li><% }); %>
+    </ul>
+  <% } %>
+  <% const r = recipe || {}; %>
+  <form action="<%= formAction %>" method="<%= method %>">
+    <div>
+      <label>Title <input name="title" value="<%= r.title || '' %>" required /></label>
+    </div>
+    <div>
+      <label>Category <input name="category" value="<%= r.category || '' %>" /></label>
+    </div>
+    <div>
+      <label>Dietary tags <input name="dietaryTags" value="<%= r.dietaryTags || '' %>" /></label>
+    </div>
+    <div>
+      <label>Prep (minutes) <input type="number" name="prepTimeMinutes" value="<%= r.prepTimeMinutes != null ? r.prepTimeMinutes : 0 %>" /></label>
+    </div>
+    <div>
+      <label>Cook (minutes) <input type="number" name="cookTimeMinutes" value="<%= r.cookTimeMinutes != null ? r.cookTimeMinutes : 0 %>" /></label>
+    </div>
+    <div>
+      <label>Servings <input type="number" name="servings" value="<%= r.servings != null ? r.servings : 4 %>" /></label>
+    </div>
+    <div>
+      <label>Ingredients<br /><textarea name="ingredients" rows="6" cols="60" required><%= r.ingredients || '' %></textarea></label>
+    </div>
+    <div>
+      <label>Instructions<br /><textarea name="instructions" rows="8" cols="60" required><%= r.instructions || '' %></textarea></label>
+    </div>
+    <button type="submit">Save</button>
+    <a href="/recipes">Cancel</a>
+  </form>
+</body>
+</html>

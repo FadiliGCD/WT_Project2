@@ -1,0 +1,6 @@
+# Environment and secrets
+.env
+node_modules/
+
+# OS / editor
+.DS_Store

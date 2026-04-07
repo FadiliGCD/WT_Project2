@@ -1,0 +1,31 @@
+<%# Recipe list with search (GET) — read side of CRUD. %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title><%= title %></title>
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <% if (flash && flash.messages && flash.messages.length) { %>
+    <ul>
+      <% flash.messages.forEach(function (m) { %><li><%= m %></li><% }); %>
+    </ul>
+  <% } %>
+  <h1>Recipes</h1>
+  <form method="get" action="/recipes">
+    <label>Search <input name="q" value="<%= q || '' %>" placeholder="title or ingredients" /></label>
+    <label>Category <input name="category" value="<%= category || '' %>" /></label>
+    <button type="submit">Filter</button>
+  </form>
+  <ul>
+    <% recipes.forEach(function (r) { %>
+      <li>
+        <a href="/recipes/<%= r._id %>"><%= r.title %></a>
+        — <%= r.category %> — by <%= r.author && r.author.username ? r.author.username : 'unknown' %>
+      </li>
+    <% }); %>
+  </ul>
+  <% if (!recipes.length) { %><p>No recipes match.</p><% } %>
+</body>
+</html>

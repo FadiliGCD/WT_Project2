@@ -1,0 +1,35 @@
+<%# Registration form with server-side validation errors %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title><%= title %></title>
+</head>
+<body>
+  <%- include('partials/nav') %>
+  <h1>Register</h1>
+  <% if (errors && errors.length) { %>
+    <ul>
+      <% errors.forEach(function (msg) { %>
+        <li><%= msg %></li>
+      <% }); %>
+    </ul>
+  <% } %>
+  <form action="/register" method="post">
+    <div>
+      <label>Username <input name="username" value="<%= body.username || '' %>" required /></label>
+    </div>
+    <div>
+      <label>Email <input type="email" name="email" value="<%= body.email || '' %>" required /></label>
+    </div>
+    <div>
+      <label>Password <input type="password" name="password" required /></label>
+    </div>
+    <div>
+      <label>Confirm password <input type="password" name="confirmPassword" required /></label>
+    </div>
+    <button type="submit">Register</button>
+  </form>
+  <p><a href="/login">Already have an account?</a></p>
+</body>
+</html>

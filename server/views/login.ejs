@@ -1,0 +1,29 @@
+<%# Login form %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title><%= title %></title>
+</head>
+<body>
+  <%- include('partials/nav') %>
+  <h1>Login</h1>
+  <% if (errors && errors.length) { %>
+    <ul>
+      <% errors.forEach(function (msg) { %>
+        <li><%= msg %></li>
+      <% }); %>
+    </ul>
+  <% } %>
+  <form action="/login" method="post">
+    <div>
+      <label>Username <input name="username" value="<%= body.username || '' %>" required /></label>
+    </div>
+    <div>
+      <label>Password <input type="password" name="password" required /></label>
+    </div>
+    <button type="submit">Log in</button>
+  </form>
+  <p><a href="/register">Create account</a></p>
+</body>
+</html>

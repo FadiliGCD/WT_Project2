@@ -1,0 +1,28 @@
+<%# Saved recipes list. %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title><%= title %></title>
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <% if (flash && flash.messages && flash.messages.length) { %>
+    <ul>
+      <% flash.messages.forEach(function (m) { %><li><%= m %></li><% }); %>
+    </ul>
+  <% } %>
+  <h1>Favourites</h1>
+  <ul>
+    <% recipes.forEach(function (r) { %>
+      <li>
+        <a href="/recipes/<%= r._id %>"><%= r.title %></a>
+        <form action="/favourites/<%= r._id %>?_method=DELETE" method="post" style="display:inline;">
+          <button type="submit">Remove</button>
+        </form>
+      </li>
+    <% }); %>
+  </ul>
+  <% if (!recipes.length) { %><p>No saved recipes yet.</p><% } %>
+</body>
+</html>

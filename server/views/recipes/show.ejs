@@ -1,0 +1,48 @@
+<%# Single recipe detail; favourite + edit/delete for owner. %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title><%= title %></title>
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <% if (flash && flash.messages && flash.messages.length) { %>
+    <ul>
+      <% flash.messages.forEach(function (m) { %><li><%= m %></li><% }); %>
+    </ul>
+  <% } %>
+  <article>
+    <h1><%= recipe.title %></h1>
+    <p>Category: <%= recipe.category %> · Prep <%= recipe.prepTimeMinutes %>m · Cook <%= recipe.cookTimeMinutes %>m · Serves <%= recipe.servings %></p>
+    <p>By <%= recipe.author && recipe.author.username ? recipe.author.username : 'unknown' %></p>
+    <% if (recipe.dietaryTags) { %><p>Dietary: <%= recipe.dietaryTags %></p><% } %>
+    <h2>Ingredients</h2>
+    <pre><%= recipe.ingredients %></pre>
+    <h2>Instructions</h2>
+    <pre><%= recipe.instructions %></pre>
+  </article>
+  <% if (currentUserId) { %>
+    <% if (!isFavourite) { %>
+      <form action="/favourites" method="post">
+        <input type="hidden" name="recipeId" value="<%= recipe._id %>" />
+        <button type="submit">Save to favourites</button>
+      </form>
+    <% } else { %>
+      <p>In your favourites.</p>
+      <form action="/favourites/<%= recipe._id %>?_method=DELETE" method="post">
+        <button type="submit">Remove from favourites</button>
+      </form>
+    <% } %>
+  <% } %>
+  <% if (currentUserId && String(recipe.author._id || recipe.author) === String(currentUserId)) { %>
+    <p>
+      <a href="/recipes/<%= recipe._id %>/edit">Edit</a>
+    </p>
+    <form action="/recipes/<%= recipe._id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this recipe?');">
+      <button type="submit">Delete recipe</button>
+    </form>
+  <% } %>
+  <p><a href="/recipes">Back to list</a></p>
+</body>
+</html>

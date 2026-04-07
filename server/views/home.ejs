@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title><%= title %> – Recipe Meal Planner</title>
+</head>
+<body>
+  <%- include('partials/nav') %>
+  <h1>Recipe Sharing & Meal Planner</h1>
+  <p>Browse recipes, save favourites, plan your week and manage your own recipes.</p>
+  <ul>
+    <li><a href="/recipes">Browse recipes</a></li>
+    <% if (!currentUserId) { %>
+      <li><a href="/register">Create an account</a> or <a href="/login">log in</a></li>
+    <% } else { %>
+      <li><a href="/meal-plan">Open your meal plan</a></li>
+    <% } %>
+  </ul>
+</body>
+</html>
