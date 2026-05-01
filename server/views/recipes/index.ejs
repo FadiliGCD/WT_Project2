@@ -1,31 +1,106 @@
-<%# Recipe list with search (GET) — read side of CRUD. %>
+<%# Recipe list with search and filters. %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= title %> – RecipeHub</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
   <%- include('../partials/nav') %>
-  <% if (flash && flash.messages && flash.messages.length) { %>
-    <ul>
-      <% flash.messages.forEach(function (m) { %><li><%= m %></li><% }); %>
-    </ul>
-  <% } %>
-  <h1>Recipes</h1>
-  <form method="get" action="/recipes">
-    <label>Search <input name="q" value="<%= q || '' %>" placeholder="title or ingredients" /></label>
-    <label>Category <input name="category" value="<%= category || '' %>" /></label>
-    <button type="submit">Filter</button>
-  </form>
-  <ul>
-    <% recipes.forEach(function (r) { %>
-      <li>
-        <a href="/recipes/<%= r._id %>"><%= r.title %></a>
-        — <%= r.category %> — by <%= r.author && r.author.username ? r.author.username : 'unknown' %>
-      </li>
-    <% }); %>
-  </ul>
-  <% if (!recipes.length) { %><p>No recipes match.</p><% } %>
+
+  <main class="app-page">
+    <% if (flash && flash.messages && flash.messages.length) { %>
+      <div class="flash-box">
+        <% flash.messages.forEach(function (m) { %>
+          <p><%= m %></p>
+        <% }); %>
+      </div>
+    <% } %>
+
+    <div class="page-title-row">
+      <h1>All Recipes</h1>
+
+      <% if (currentUserId) { %>
+        <a href="/recipes/new" class="btn btn-orange">+ Add Recipe</a>
+      <% } %>
+    </div>
+
+    <div class="recipes-layout">
+      <aside class="filter-card">
+        <h2>Category</h2>
+
+        <form method="get" action="/recipes" class="filter-form">
+          <label>
+            Search
+            <input name="q" value="<%= q || '' %>" placeholder="Search recipes..." />
+          </label>
+
+          <label>
+            Category
+            <input name="category" value="<%= category || '' %>" placeholder="Breakfast, Dinner..." />
+          </label>
+
+          <button type="submit" class="btn btn-orange full-width">Filter</button>
+
+          <a href="/recipes" class="clear-filter">Clear filters</a>
+        </form>
+      </aside>
+
+      <section class="recipes-content">
+        <% if (recipes.length) { %>
+          <div class="recipe-grid">
+            <% recipes.forEach(function (r) { %>
+              <article class="recipe-card">
+                <a href="/recipes/<%= r._id %>">
+                  <div class="recipe-image">
+                    <img
+                      src="<%= r.imageUrl || 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800' %>"
+                      alt="<%= r.title %>"
+                    />
+
+                    <% if (currentUserId) { %>
+                      <form action="/favourites/<%= r._id %>" method="post" class="heart-form">
+                        <button type="submit" class="heart" title="Save recipe">♡</button>
+                      </form>
+                    <% } else { %>
+                      <span class="heart">♡</span>
+                    <% } %>
+                  </div>
+
+                  <div class="recipe-body">
+                    <div class="recipe-meta">
+                      <span><%= r.category || 'Recipe' %></span>
+                      <span>⏱ <%= (r.prepTimeMinutes || 0) + (r.cookTimeMinutes || 0) || '—' %> min</span>
+                    </div>
+
+                    <h3><%= r.title %></h3>
+
+                    <p class="recipe-author">
+                      by <%= r.author && r.author.username ? r.author.username : 'unknown' %>
+                    </p>
+                  </div>
+                </a>
+              </article>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <h2>No recipes found</h2>
+            <p>Try changing your search or category filter.</p>
+            <% if (currentUserId) { %>
+              <a href="/recipes/new" class="btn btn-orange">Create first recipe</a>
+            <% } %>
+          </div>
+        <% } %>
+      </section>
+    </div>
+  </main>
 </body>
 </html>

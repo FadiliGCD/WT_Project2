@@ -2,19 +2,99 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title><%= title %> – Recipe Meal Planner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= title %> – RecipeHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
   <%- include('partials/nav') %>
-  <h1>Recipe Sharing & Meal Planner</h1>
-  <p>Browse recipes, save favourites, plan your week and manage your own recipes.</p>
-  <ul>
-    <li><a href="/recipes">Browse recipes</a></li>
-    <% if (!currentUserId) { %>
-      <li><a href="/register">Create an account</a> or <a href="/login">log in</a></li>
-    <% } else { %>
-      <li><a href="/meal-plan">Open your meal plan</a></li>
-    <% } %>
-  </ul>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Discover & Share<br />Amazing Recipes</h1>
+        <p>Explore delicious recipes, plan your meals, and share your culinary creations with others.</p>
+
+        <div class="hero-search-row">
+          <form class="hero-search" action="/recipes" method="get">
+            <span>🔍</span>
+            <input type="text" name="q" placeholder="Search for recipes..." />
+          </form>
+
+          <a href="/recipes" class="btn btn-light">Browse Recipes</a>
+        </div>
+
+        <div class="hero-actions">
+          <% if (currentUserId) { %>
+            <a href="/recipes/new" class="btn btn-green">Share Your Recipe</a>
+            <a href="/meal-plan" class="btn btn-outline-light">Plan Your Meals</a>
+          <% } else { %>
+            <a href="/register" class="btn btn-green">Create Account</a>
+            <a href="/login" class="btn btn-outline-light">Login</a>
+          <% } %>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="section-heading">
+        <h2>Featured Recipes</h2>
+        <a href="/recipes">View all →</a>
+      </div>
+
+      <div class="recipe-grid">
+        <article class="recipe-card">
+          <a href="/recipes">
+            <div class="recipe-image">
+              <img src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800" alt="Creamy Tuscan Chicken Pasta">
+              <span class="heart">♡</span>
+            </div>
+            <div class="recipe-body">
+              <div class="recipe-meta">
+                <span>Dinner</span>
+                <span>⏱ 30 min</span>
+              </div>
+              <h3>Creamy Tuscan Chicken Pasta</h3>
+            </div>
+          </a>
+        </article>
+
+        <article class="recipe-card">
+          <a href="/recipes">
+            <div class="recipe-image">
+              <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800" alt="Fresh Summer Berry Salad">
+              <span class="heart">♡</span>
+            </div>
+            <div class="recipe-body">
+              <div class="recipe-meta">
+                <span>Breakfast</span>
+                <span>⏱ 15 min</span>
+              </div>
+              <h3>Fresh Summer Berry Salad</h3>
+            </div>
+          </a>
+        </article>
+
+        <article class="recipe-card">
+          <a href="/recipes">
+            <div class="recipe-image">
+              <img src="https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=800" alt="Classic Margherita Pizza">
+              <span class="heart">♡</span>
+            </div>
+            <div class="recipe-body">
+              <div class="recipe-meta">
+                <span>Dinner</span>
+                <span>⏱ 45 min</span>
+              </div>
+              <h3>Classic Margherita Pizza</h3>
+            </div>
+          </a>
+        </article>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

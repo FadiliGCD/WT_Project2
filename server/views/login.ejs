@@ -3,27 +3,99 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= title %> – RecipeHub</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
   <%- include('partials/nav') %>
-  <h1>Login</h1>
-  <% if (errors && errors.length) { %>
-    <ul>
-      <% errors.forEach(function (msg) { %>
-        <li><%= msg %></li>
-      <% }); %>
-    </ul>
-  <% } %>
-  <form action="/login" method="post">
-    <div>
-      <label>Username <input name="username" value="<%= body.username || '' %>" required /></label>
-    </div>
-    <div>
-      <label>Password <input type="password" name="password" required /></label>
-    </div>
-    <button type="submit">Log in</button>
-  </form>
-  <p><a href="/register">Create account</a></p>
+
+  <% const formBody = body || {}; %>
+
+  <main class="auth-page">
+    <section class="auth-layout">
+      <div class="auth-side auth-side-orange">
+        <div class="auth-brand-box">
+          <div class="auth-brand-icon">R</div>
+          <h1>Welcome Back</h1>
+          <p>
+            Log in to continue discovering recipes, saving favourites,
+            and planning your weekly meals with RecipeHub.
+          </p>
+
+          <div class="auth-side-points">
+            <div>
+              <strong>🍽 Discover</strong>
+              <span>Explore delicious recipes for every occasion</span>
+            </div>
+            <div>
+              <strong>❤️ Save</strong>
+              <span>Keep your favourite recipes in one place</span>
+            </div>
+            <div>
+              <strong>📅 Plan</strong>
+              <span>Organize your meals for the week with ease</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-side auth-side-form">
+        <div class="auth-card">
+          <div class="auth-card-header">
+            <p class="eyebrow">RecipeHub</p>
+            <h2>Login</h2>
+            <p class="auth-subtitle">Enter your account details to continue.</p>
+          </div>
+
+          <% if (errors && errors.length) { %>
+            <div class="error-box">
+              <% errors.forEach(function (msg) { %>
+                <p><%= msg %></p>
+              <% }); %>
+            </div>
+          <% } %>
+
+          <form action="/login" method="post" class="recipe-form">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input
+                id="username"
+                name="username"
+                value="<%= formBody.username || '' %>"
+                placeholder="Enter your username"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            <div class="form-actions auth-actions">
+              <button type="submit" class="btn btn-orange auth-submit">Log in</button>
+            </div>
+          </form>
+
+          <p class="auth-switch">
+            Don’t have an account?
+            <a href="/register">Create one here</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

@@ -3,33 +3,122 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= title %> – RecipeHub</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
   <%- include('partials/nav') %>
-  <h1>Register</h1>
-  <% if (errors && errors.length) { %>
-    <ul>
-      <% errors.forEach(function (msg) { %>
-        <li><%= msg %></li>
-      <% }); %>
-    </ul>
-  <% } %>
-  <form action="/register" method="post">
-    <div>
-      <label>Username <input name="username" value="<%= body.username || '' %>" required /></label>
-    </div>
-    <div>
-      <label>Email <input type="email" name="email" value="<%= body.email || '' %>" required /></label>
-    </div>
-    <div>
-      <label>Password <input type="password" name="password" required /></label>
-    </div>
-    <div>
-      <label>Confirm password <input type="password" name="confirmPassword" required /></label>
-    </div>
-    <button type="submit">Register</button>
-  </form>
-  <p><a href="/login">Already have an account?</a></p>
+
+  <% const formBody = body || {}; %>
+
+  <main class="auth-page">
+    <section class="auth-layout">
+      <div class="auth-side auth-side-orange">
+        <div class="auth-brand-box">
+          <div class="auth-brand-icon">R</div>
+          <h1>Join RecipeHub</h1>
+          <p>
+            Create your account to share recipes, save your favourites,
+            and organize your meal plans in one place.
+          </p>
+
+          <div class="auth-side-points">
+            <div>
+              <strong>📝 Share Recipes</strong>
+              <span>Publish your own dishes and cooking ideas</span>
+            </div>
+            <div>
+              <strong>⭐ Build Favourites</strong>
+              <span>Save the meals you want to cook again</span>
+            </div>
+            <div>
+              <strong>📆 Stay Organized</strong>
+              <span>Plan breakfast, lunch, and dinner ahead of time</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-side auth-side-form">
+        <div class="auth-card">
+          <div class="auth-card-header">
+            <p class="eyebrow">RecipeHub</p>
+            <h2>Create Account</h2>
+            <p class="auth-subtitle">Fill in your details to get started.</p>
+          </div>
+
+          <% if (errors && errors.length) { %>
+            <div class="error-box">
+              <% errors.forEach(function (msg) { %>
+                <p><%= msg %></p>
+              <% }); %>
+            </div>
+          <% } %>
+
+          <form action="/register" method="post" class="recipe-form">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input
+                id="username"
+                name="username"
+                value="<%= formBody.username || '' %>"
+                placeholder="Choose a username"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                value="<%= formBody.email || '' %>"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Create a password"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                name="confirmPassword"
+                placeholder="Repeat your password"
+                required
+              />
+            </div>
+
+            <div class="form-actions auth-actions">
+              <button type="submit" class="btn btn-orange auth-submit">Register</button>
+            </div>
+          </form>
+
+          <p class="auth-switch">
+            Already have an account?
+            <a href="/login">Log in here</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

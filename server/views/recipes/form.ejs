@@ -2,44 +2,85 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= title %> – RecipeHub</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
   <%- include('../partials/nav') %>
-  <h1><%= title %></h1>
-  <% if (errors && errors.length) { %>
-    <ul>
-      <% errors.forEach(function (msg) { %><li><%= msg %></li><% }); %>
-    </ul>
-  <% } %>
-  <% const r = recipe || {}; %>
-  <form action="<%= formAction %>" method="<%= method %>">
-    <div>
-      <label>Title <input name="title" value="<%= r.title || '' %>" required /></label>
-    </div>
-    <div>
-      <label>Category <input name="category" value="<%= r.category || '' %>" /></label>
-    </div>
-    <div>
-      <label>Dietary tags <input name="dietaryTags" value="<%= r.dietaryTags || '' %>" /></label>
-    </div>
-    <div>
-      <label>Prep (minutes) <input type="number" name="prepTimeMinutes" value="<%= r.prepTimeMinutes != null ? r.prepTimeMinutes : 0 %>" /></label>
-    </div>
-    <div>
-      <label>Cook (minutes) <input type="number" name="cookTimeMinutes" value="<%= r.cookTimeMinutes != null ? r.cookTimeMinutes : 0 %>" /></label>
-    </div>
-    <div>
-      <label>Servings <input type="number" name="servings" value="<%= r.servings != null ? r.servings : 4 %>" /></label>
-    </div>
-    <div>
-      <label>Ingredients<br /><textarea name="ingredients" rows="6" cols="60" required><%= r.ingredients || '' %></textarea></label>
-    </div>
-    <div>
-      <label>Instructions<br /><textarea name="instructions" rows="8" cols="60" required><%= r.instructions || '' %></textarea></label>
-    </div>
-    <button type="submit">Save</button>
-    <a href="/recipes">Cancel</a>
-  </form>
+
+  <main class="app-page form-page">
+    <a href="/recipes" class="back-link">← Back to Recipes</a>
+
+    <% const r = recipe || {}; %>
+
+    <section class="form-card">
+      <h1><%= title %></h1>
+
+      <% if (errors && errors.length) { %>
+        <div class="error-box">
+          <% errors.forEach(function (msg) { %>
+            <p><%= msg %></p>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <form action="<%= formAction %>" method="<%= method %>" class="recipe-form">
+        <div class="form-group">
+          <label for="title">Recipe Title</label>
+          <input id="title" name="title" value="<%= r.title || '' %>" placeholder="e.g., Chocolate Chip Cookies" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="category">Category</label>
+            <input id="category" name="category" value="<%= r.category || '' %>" placeholder="Breakfast, Lunch, Dinner..." />
+          </div>
+
+          <div class="form-group">
+            <label for="prepTimeMinutes">Prep Time (min)</label>
+            <input id="prepTimeMinutes" type="number" name="prepTimeMinutes" value="<%= r.prepTimeMinutes != null ? r.prepTimeMinutes : 0 %>" />
+          </div>
+
+          <div class="form-group">
+            <label for="cookTimeMinutes">Cook Time (min)</label>
+            <input id="cookTimeMinutes" type="number" name="cookTimeMinutes" value="<%= r.cookTimeMinutes != null ? r.cookTimeMinutes : 0 %>" />
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="servings">Servings</label>
+            <input id="servings" type="number" name="servings" value="<%= r.servings != null ? r.servings : 4 %>" />
+          </div>
+
+          <div class="form-group">
+            <label for="dietaryTags">Dietary Tags</label>
+            <input id="dietaryTags" name="dietaryTags" value="<%= r.dietaryTags || '' %>" placeholder="Vegan, Gluten-Free, High Protein..." />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ingredients">Ingredients</label>
+          <textarea id="ingredients" name="ingredients" rows="7" required placeholder="Write each ingredient on a new line"><%= r.ingredients || '' %></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="instructions">Instructions</label>
+          <textarea id="instructions" name="instructions" rows="9" required placeholder="Write the cooking steps here"><%= r.instructions || '' %></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-orange">Save Recipe</button>
+          <a href="/recipes" class="btn btn-outline-orange">Cancel</a>
+        </div>
+      </form>
+    </section>
+  </main>
 </body>
 </html>

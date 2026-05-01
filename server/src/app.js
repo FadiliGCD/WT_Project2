@@ -9,32 +9,24 @@ const methodOverride = require('method-override');
 const { webRouter } = require('./routes/web');
 const { apiRouter } = require('./routes/api');
 
-/**
-// Builds and returns the configured Express app no listen
- * @returns {import('express').Express}
- */
 function createApp() {
   const app = express();
 
-  // Trust first proxy hop Render so cookies work behind HTTPS
   app.set('trust proxy', 1);
 
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, '..', 'views'));
 
-  // Parse JSON bodies for /api/* and urlencoded for HTML 
+  app.use(express.static(path.join(__dirname, '..', 'public')));
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(methodOverride('_method'));
-
-  // Cookie parser enables req.cookies and res.cookie
   app.use(cookieParser());
 
   const mongoUrl = process.env.MONGODB_URI;
   const sessionSecret = process.env.SESSION_SECRET || 'dev-only-secret-change-me';
 
-  // Server-side session stored in MongoDB for multiple users and sessions
-  // Connect-mongo exceeds in-memory session stores taught in basic demos
   app.use(
     session({
       name: 'sid',
@@ -51,21 +43,19 @@ function createApp() {
     })
   );
 
-  // Expose current user id to all views when logged in
   app.use((req, res, next) => {
     res.locals.currentUserId = req.session.userId || null;
     res.locals.username = req.session.username || null;
     res.locals.flash = req.session.flash || null;
+    res.locals.currentPath = req.path;
     delete req.session.flash;
     next();
   });
 
-  // Simple health check for render and monitors
   app.get('/health', (req, res) => {
     res.status(200).send('ok');
   });
 
-  // JSON api same origin as react when client/dist is served
   app.use('/api', apiRouter);
 
   const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
@@ -73,11 +63,7 @@ function createApp() {
   const serveReact = fs.existsSync(reactIndex);
 
   if (serveReact) {
-    // Static assets (JS/CSS) emitted by Vite under /assets/*
     app.use(express.static(clientDist));
-    /**
-    // Fallback react router paths 
-     */
     app.get('*', (req, res, next) => {
       if (req.method !== 'GET' && req.method !== 'HEAD') {
         return next();
@@ -87,7 +73,6 @@ function createApp() {
       });
     });
   } else {
-    // Local dev without a client build
     app.use(webRouter);
   }
 

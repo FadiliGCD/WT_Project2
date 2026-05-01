@@ -1,27 +1,26 @@
-<nav>
-  <a href="/">Home</a>
-  |
-  <a href="/recipes">Recipes</a>
-  <% if (currentUserId) { %>
-    |
-    <a href="/recipes/new">Add recipe</a>
-    |
-    <a href="/favourites">Favourites</a>
-    |
-    <a href="/meal-plan">Meal plan</a>
-    |
-    <a href="/profile">Profile</a>
-    |
-    <span>Signed in as <%= username || 'user' %></span>
-    |
-    <form action="/logout" method="post" style="display:inline;">
-      <button type="submit">Log out</button>
-    </form>
-  <% } else { %>
-    |
-    <a href="/login">Login</a>
-    |
-    <a href="/register">Register</a>
-  <% } %>
+<nav class="navbar">
+  <a href="/" class="brand">
+    <div class="brand-icon">R</div>
+    <span>RecipeHub</span>
+  </a>
+
+  <div class="nav-links">
+    <a class="<%= currentPath === '/recipes' ? 'active' : '' %>" href="/recipes">Recipes</a>
+    <a class="<%= currentPath === '/meal-plan' ? 'active' : '' %>" href="/meal-plan">Meal Plan</a>
+    <% if (currentUserId) { %>
+      <a class="<%= currentPath === '/favourites' ? 'active' : '' %>" href="/favourites">Favourites</a>
+    <% } %>
+  </div>
+
+  <div class="nav-actions">
+    <% if (currentUserId) { %>
+      <a class="icon-link <%= currentPath === '/profile' ? 'active-icon' : '' %>" href="/profile" title="Profile">👤</a>
+      <form action="/logout" method="post">
+        <button class="logout-btn" type="submit">Logout</button>
+      </form>
+    <% } else { %>
+      <a class="nav-login" href="/login">Login</a>
+      <a class="nav-register" href="/register">Register</a>
+    <% } %>
+  </div>
 </nav>
-<hr />

@@ -1,64 +1,90 @@
-<%# Weekly grid: assign recipe per day via POS clear via DELETE form %>
+<%# Weekly grid: assign recipe per day and clear via DELETE form. %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= title %> – RecipeHub</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
   <%- include('../partials/nav') %>
-  <% if (flash && flash.messages && flash.messages.length) { %>
-    <ul>
-      <% flash.messages.forEach(function (m) { %><li><%= m %></li><% }); %>
-    </ul>
-  <% } %>
-  <h1>Meal plan</h1>
-  <form method="get" action="/meal-plan">
-    <label>Week containing <input type="date" name="week" value="<%= weekStartInput %>" /></label>
-    <button type="submit">Go</button>
-  </form>
-  <p>Week starting <%= weekStartInput %> (Monday).</p>
-  <table border="1" cellpadding="4">
-    <thead>
-      <tr>
-        <th></th>
-        <% dayLabels.forEach(function (d) { %><th><%= d %></th><% }); %>
-      </tr>
-    </thead>
-    <tbody>
+
+  <main class="app-page">
+    <% if (flash && flash.messages && flash.messages.length) { %>
+      <div class="flash-box">
+        <% flash.messages.forEach(function (m) { %>
+          <p><%= m %></p>
+        <% }); %>
+      </div>
+    <% } %>
+
+    <div class="page-title-row">
+      <div>
+        <h1>Meal Planner</h1>
+        <p class="page-subtitle">Plan your meals for the week starting <strong><%= weekStartInput %></strong>.</p>
+      </div>
+
+      <form method="get" action="/meal-plan" class="week-form">
+        <label for="week">Week</label>
+        <input id="week" type="date" name="week" value="<%= weekStartInput %>" />
+        <button type="submit" class="btn btn-orange small-btn">Go</button>
+      </form>
+    </div>
+
+    <section class="planner-card">
+      <div class="planner-grid planner-header">
+        <div class="planner-label">Meal</div>
+        <% dayLabels.forEach(function (d) { %>
+          <div class="planner-day"><%= d %></div>
+        <% }); %>
+      </div>
+
       <% mealSlots.forEach(function (slot) { %>
-        <tr>
-          <th><%= slot %></th>
+        <div class="planner-grid planner-row">
+          <div class="planner-meal"><%= slot.charAt(0).toUpperCase() + slot.slice(1) %></div>
+
           <% for (let day = 0; day < 7; day++) { %>
             <% const key = day + '-' + slot; const cell = grid[key]; %>
-            <td>
+
+            <div class="planner-cell">
               <% if (cell && cell.recipe) { %>
-                <a href="/recipes/<%= cell.recipe._id %>"><%= cell.recipe.title %></a>
-                <form action="/meal-plan?_method=DELETE" method="post" style="display:inline;">
-                  <input type="hidden" name="weekStart" value="<%= weekStartInput %>" />
-                  <input type="hidden" name="dayIndex" value="<%= day %>" />
-                  <input type="hidden" name="mealSlot" value="<%= slot %>" />
-                  <button type="submit">Clear</button>
-                </form>
+                <div class="planned-recipe">
+                  <a href="/recipes/<%= cell.recipe._id %>"><%= cell.recipe.title %></a>
+
+                  <form action="/meal-plan?_method=DELETE" method="post">
+                    <input type="hidden" name="weekStart" value="<%= weekStartInput %>" />
+                    <input type="hidden" name="dayIndex" value="<%= day %>" />
+                    <input type="hidden" name="mealSlot" value="<%= slot %>" />
+                    <button type="submit" title="Clear meal">×</button>
+                  </form>
+                </div>
               <% } else { %>
-                <form action="/meal-plan" method="post">
+                <form action="/meal-plan" method="post" class="planner-add-form">
                   <input type="hidden" name="weekStart" value="<%= weekStartInput %>" />
                   <input type="hidden" name="dayIndex" value="<%= day %>" />
                   <input type="hidden" name="mealSlot" value="<%= slot %>" />
+
                   <select name="recipeId" required>
-                    <option value="">— pick recipe —</option>
+                    <option value="">+ Add recipe</option>
                     <% recipeChoices.forEach(function (r) { %>
                       <option value="<%= r._id %>"><%= r.title %></option>
                     <% }); %>
                   </select>
+
                   <button type="submit">Set</button>
                 </form>
               <% } %>
-            </td>
+            </div>
           <% } %>
-        </tr>
+        </div>
       <% }); %>
-    </tbody>
-  </table>
+    </section>
+  </main>
 </body>
 </html>

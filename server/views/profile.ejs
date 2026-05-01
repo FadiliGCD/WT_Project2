@@ -2,26 +2,98 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= title %> – RecipeHub</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
   <%- include('partials/nav') %>
-  <h1>Profile</h1>
-  <p>Username: <%= user.username %></p>
-  <p>Email: <%= user.email %></p>
-  <p>Saved favourites: <%= favCount %></p>
-  <h2>My recipes</h2>
-  <ul>
-    <% myRecipes.forEach(function (r) { %>
-      <li>
-        <a href="/recipes/<%= r._id %>"><%= r.title %></a>
-        <a href="/recipes/<%= r._id %>/edit">Edit</a>
-        <form action="/recipes/<%= r._id %>?_method=DELETE" method="post" style="display:inline;" onsubmit="return confirm('Delete?');">
-          <button type="submit">Delete</button>
-        </form>
-      </li>
-    <% }); %>
-  </ul>
-  <% if (!myRecipes.length) { %><p>You have not published any recipes yet. <a href="/recipes/new">Add one</a>.</p><% } %>
+
+  <main class="app-page">
+    <section class="profile-card">
+      <div class="profile-top">
+        <div class="profile-left">
+          <div class="profile-avatar">👤</div>
+
+          <div>
+            <h1><%= user.username %></h1>
+            <p>✉️ <%= user.email %></p>
+          </div>
+        </div>
+
+        <a href="/recipes/new" class="btn btn-orange">+ Add Recipe</a>
+      </div>
+
+      <div class="profile-stats">
+        <div>
+          <strong><%= myRecipes.length %></strong>
+          <span>Recipes Created</span>
+        </div>
+
+        <div>
+          <strong><%= favCount %></strong>
+          <span>Saved Favourites</span>
+        </div>
+
+        <div>
+          <strong>7</strong>
+          <span>Meal Days</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="profile-recipes-section">
+      <div class="section-heading">
+        <h2>My Recipes</h2>
+        <a href="/recipes/new">Add new →</a>
+      </div>
+
+      <% if (myRecipes.length) { %>
+        <div class="recipe-grid">
+          <% myRecipes.forEach(function (r) { %>
+            <article class="recipe-card">
+              <a href="/recipes/<%= r._id %>">
+                <div class="recipe-image">
+                  <img
+                    src="<%= r.imageUrl || 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800' %>"
+                    alt="<%= r.title %>"
+                  />
+                  <span class="heart">♡</span>
+                </div>
+
+                <div class="recipe-body">
+                  <div class="recipe-meta">
+                    <span><%= r.category || 'Recipe' %></span>
+                    <span>⏱ <%= (r.prepTimeMinutes || 0) + (r.cookTimeMinutes || 0) || '—' %> min</span>
+                  </div>
+
+                  <h3><%= r.title %></h3>
+                </div>
+              </a>
+
+              <div class="card-owner-actions">
+                <a href="/recipes/<%= r._id %>/edit">Edit</a>
+
+                <form action="/recipes/<%= r._id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete?');">
+                  <button type="submit">Delete</button>
+                </form>
+              </div>
+            </article>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <h2>You have not published any recipes yet</h2>
+          <p>Create your first recipe and start building your collection.</p>
+          <a href="/recipes/new" class="btn btn-orange">Add Recipe</a>
+        </div>
+      <% } %>
+    </section>
+  </main>
 </body>
 </html>

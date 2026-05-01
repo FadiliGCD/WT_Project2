@@ -3,26 +3,66 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= title %> – RecipeHub</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
   <%- include('../partials/nav') %>
-  <% if (flash && flash.messages && flash.messages.length) { %>
-    <ul>
-      <% flash.messages.forEach(function (m) { %><li><%= m %></li><% }); %>
-    </ul>
-  <% } %>
-  <h1>Favourites</h1>
-  <ul>
-    <% recipes.forEach(function (r) { %>
-      <li>
-        <a href="/recipes/<%= r._id %>"><%= r.title %></a>
-        <form action="/favourites/<%= r._id %>?_method=DELETE" method="post" style="display:inline;">
-          <button type="submit">Remove</button>
-        </form>
-      </li>
-    <% }); %>
-  </ul>
-  <% if (!recipes.length) { %><p>No saved recipes yet.</p><% } %>
+
+  <main class="app-page">
+    <% if (flash && flash.messages && flash.messages.length) { %>
+      <div class="flash-box">
+        <% flash.messages.forEach(function (m) { %>
+          <p><%= m %></p>
+        <% }); %>
+      </div>
+    <% } %>
+
+    <div class="page-title-row">
+      <h1>My Favourites</h1>
+    </div>
+
+    <% if (recipes.length) { %>
+      <div class="recipe-grid">
+        <% recipes.forEach(function (r) { %>
+          <article class="recipe-card">
+            <a href="/recipes/<%= r._id %>">
+              <div class="recipe-image">
+                <img
+                  src="<%= r.imageUrl || 'https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=800' %>"
+                  alt="<%= r.title %>"
+                />
+
+                <form action="/favourites/<%= r._id %>?_method=DELETE" method="post" class="heart-form">
+                  <button type="submit" class="heart active-heart" title="Remove favourite">♥</button>
+                </form>
+              </div>
+
+              <div class="recipe-body">
+                <div class="recipe-meta">
+                  <span><%= r.category || 'Recipe' %></span>
+                  <span>⏱ <%= (r.prepTimeMinutes || 0) + (r.cookTimeMinutes || 0) || '—' %> min</span>
+                </div>
+
+                <h3><%= r.title %></h3>
+              </div>
+            </a>
+          </article>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <h2>No saved recipes yet</h2>
+        <p>Start browsing recipes and save your favourites here.</p>
+        <a href="/recipes" class="btn btn-orange">Browse Recipes</a>
+      </div>
+    <% } %>
+  </main>
 </body>
 </html>

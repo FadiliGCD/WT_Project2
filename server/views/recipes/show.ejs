@@ -3,46 +3,128 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= title %> – RecipeHub</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
   <%- include('../partials/nav') %>
-  <% if (flash && flash.messages && flash.messages.length) { %>
-    <ul>
-      <% flash.messages.forEach(function (m) { %><li><%= m %></li><% }); %>
-    </ul>
-  <% } %>
-  <article>
-    <h1><%= recipe.title %></h1>
-    <p>Category: <%= recipe.category %> · Prep <%= recipe.prepTimeMinutes %>m · Cook <%= recipe.cookTimeMinutes %>m · Serves <%= recipe.servings %></p>
-    <p>By <%= recipe.author && recipe.author.username ? recipe.author.username : 'unknown' %></p>
-    <% if (recipe.dietaryTags) { %><p>Dietary: <%= recipe.dietaryTags %></p><% } %>
-    <h2>Ingredients</h2>
-    <pre><%= recipe.ingredients %></pre>
-    <h2>Instructions</h2>
-    <pre><%= recipe.instructions %></pre>
-  </article>
-  <% if (currentUserId) { %>
-    <% if (!isFavourite) { %>
-      <form action="/favourites" method="post">
-        <input type="hidden" name="recipeId" value="<%= recipe._id %>" />
-        <button type="submit">Save to favourites</button>
-      </form>
-    <% } else { %>
-      <p>In your favourites.</p>
-      <form action="/favourites/<%= recipe._id %>?_method=DELETE" method="post">
-        <button type="submit">Remove from favourites</button>
-      </form>
+
+  <main class="app-page">
+    <a href="/recipes" class="back-link">← Back to Recipes</a>
+
+    <% if (flash && flash.messages && flash.messages.length) { %>
+      <div class="flash-box">
+        <% flash.messages.forEach(function (m) { %>
+          <p><%= m %></p>
+        <% }); %>
+      </div>
     <% } %>
-  <% } %>
-  <% if (currentUserId && String(recipe.author._id || recipe.author) === String(currentUserId)) { %>
-    <p>
-      <a href="/recipes/<%= recipe._id %>/edit">Edit</a>
-    </p>
-    <form action="/recipes/<%= recipe._id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this recipe?');">
-      <button type="submit">Delete recipe</button>
-    </form>
-  <% } %>
-  <p><a href="/recipes">Back to list</a></p>
+
+    <article class="recipe-detail-card">
+      <div class="recipe-detail-image">
+        <img
+          src="<%= recipe.imageUrl || 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=1200' %>"
+          alt="<%= recipe.title %>"
+        />
+      </div>
+
+      <div class="recipe-detail-content">
+        <div class="recipe-detail-header">
+          <div>
+            <p class="eyebrow"><%= recipe.category || 'Recipe' %></p>
+            <h1><%= recipe.title %></h1>
+            <p class="recipe-author-large">
+              By <%= recipe.author && recipe.author.username ? recipe.author.username : 'unknown' %>
+            </p>
+          </div>
+
+          <% if (currentUserId) { %>
+            <% if (!isFavourite) { %>
+              <form action="/favourites" method="post">
+                <input type="hidden" name="recipeId" value="<%= recipe._id %>" />
+                <button type="submit" class="detail-heart">♡</button>
+              </form>
+            <% } else { %>
+              <form action="/favourites/<%= recipe._id %>?_method=DELETE" method="post">
+                <button type="submit" class="detail-heart active-heart">♥</button>
+              </form>
+            <% } %>
+          <% } %>
+        </div>
+
+        <div class="detail-meta-grid">
+          <div>
+            <strong><%= recipe.prepTimeMinutes || 0 %> min</strong>
+            <span>Prep time</span>
+          </div>
+          <div>
+            <strong><%= recipe.cookTimeMinutes || 0 %> min</strong>
+            <span>Cook time</span>
+          </div>
+          <div>
+            <strong><%= recipe.servings || 1 %></strong>
+            <span>Servings</span>
+          </div>
+        </div>
+
+        <% if (recipe.dietaryTags) { %>
+          <div class="tag-row">
+            <% String(recipe.dietaryTags).split(',').forEach(function (tag) { %>
+              <% if (tag.trim()) { %>
+                <span><%= tag.trim() %></span>
+              <% } %>
+            <% }); %>
+          </div>
+        <% } %>
+
+        <div class="detail-actions">
+          <% if (currentUserId) { %>
+            <% if (!isFavourite) { %>
+              <form action="/favourites" method="post">
+                <input type="hidden" name="recipeId" value="<%= recipe._id %>" />
+                <button type="submit" class="btn btn-orange">Save Recipe</button>
+              </form>
+            <% } else { %>
+              <form action="/favourites/<%= recipe._id %>?_method=DELETE" method="post">
+                <button type="submit" class="btn btn-outline-orange">Remove Favourite</button>
+              </form>
+            <% } %>
+          <% } else { %>
+            <a href="/login" class="btn btn-orange">Login to Save</a>
+          <% } %>
+
+          <a href="/meal-plan" class="btn btn-outline-orange">Add to Meal Plan</a>
+        </div>
+      </div>
+    </article>
+
+    <section class="recipe-info-grid">
+      <div class="info-card">
+        <h2>Ingredients</h2>
+        <pre><%= recipe.ingredients %></pre>
+      </div>
+
+      <div class="info-card">
+        <h2>Instructions</h2>
+        <pre><%= recipe.instructions %></pre>
+      </div>
+    </section>
+
+    <% if (currentUserId && String(recipe.author._id || recipe.author) === String(currentUserId)) { %>
+      <section class="owner-actions">
+        <a href="/recipes/<%= recipe._id %>/edit" class="btn btn-orange">Edit Recipe</a>
+
+        <form action="/recipes/<%= recipe._id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this recipe?');">
+          <button type="submit" class="btn btn-danger">Delete Recipe</button>
+        </form>
+      </section>
+    <% } %>
+  </main>
 </body>
 </html>
