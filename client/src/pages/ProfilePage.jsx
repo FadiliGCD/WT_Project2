@@ -1,11 +1,14 @@
-/**
- * ASSIGNMENT 3 — VIEW 7: Profile & my recipes (Assignment 1 functionality 6).
- * Intended backend: user document + GET recipes filtered by author (web: /profile).
- * Here we filter mock `recipes` where authorUsername matches current user.
- */
+// Assignment 4: filter `/api/recipes` data by author id (same as session user).
 
 import { Link } from 'react-router-dom'
 import { useAppData } from '../context/AppDataContext'
+
+function authorId(r) {
+  const a = r.author
+  if (a && typeof a === 'object' && a._id) return String(a._id)
+  if (a) return String(a)
+  return ''
+}
 
 export function ProfilePage() {
   const { currentUser, recipes } = useAppData()
@@ -24,7 +27,7 @@ export function ProfilePage() {
     )
   }
 
-  const mine = recipes.filter((r) => r.authorUsername === currentUser.username)
+  const mine = recipes.filter((r) => authorId(r) === currentUser.id)
 
   return (
     <section className="page profile-page">
@@ -33,10 +36,7 @@ export function ProfilePage() {
         <p>
           <strong>{currentUser.username}</strong>
         </p>
-        <p className="hint">
-          Future: session from <code>POST .../api/auth/login</code>; list from filtered{' '}
-          <code>/api/recipes</code> or profile endpoint.
-        </p>
+        <p className="hint">Recipes below are filtered to your account (author id matches session).</p>
         <Link to="/add-recipe" className="btn btn-primary">
           Add recipe
         </Link>

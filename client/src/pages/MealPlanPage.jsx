@@ -1,11 +1,6 @@
-/**
- * ASSIGNMENT 3 — VIEW 6: Weekly meal planner (Assignment 1 functionality 5).
- * Intended backend:
- *   GET  `${process.env.REACT_APP_API_URL}/api/meal-plan?week=`
- *   POST `${process.env.REACT_APP_API_URL}/api/meal-plan` (weekStart, dayIndex, mealSlot, recipeId)
- * Grid edits only update React state (no HTTP).
- */
+// Assignment 4: GET/POST/DELETE /api/meal-plan with week anchor (Monday from server).
 
+import { useState } from 'react'
 import { useAppData } from '../context/AppDataContext'
 
 export function MealPlanPage() {
@@ -17,7 +12,10 @@ export function MealPlanPage() {
     MEAL_SLOTS,
     DAY_LABELS,
     currentUser,
+    mealPlanWeekStart,
+    setMealPlanWeekAnchor,
   } = useAppData()
+  const [planError, setPlanError] = useState('')
 
   if (!currentUser) {
     return (
@@ -34,9 +32,29 @@ export function MealPlanPage() {
     <section className="page meal-plan-page">
       <header className="page-header">
         <h1>Meal plan</h1>
-        <p className="hint">
-          Mock week grid. Intended API: /api/meal-plan (GET/POST/DELETE)
-        </p>
+        <p className="hint">Week anchored to Monday <code>{mealPlanWeekStart}</code> (server normalises dates).</p>
+        <label className="week-picker">
+          Jump to week
+          <input
+            type="date"
+            value={mealPlanWeekStart}
+            onChange={async (e) => {
+              const v = e.target.value
+              if (!v) return
+              setPlanError('')
+              try {
+                await setMealPlanWeekAnchor(v)
+              } catch (err) {
+                setPlanError(err.message || 'Could not load week')
+              }
+            }}
+          />
+        </label>
+        {planError && (
+          <p className="error-list" role="alert">
+            {planError}
+          </p>
+        )}
       </header>
       <div className="table-scroll">
         <table className="meal-grid">
@@ -66,7 +84,14 @@ export function MealPlanPage() {
                           <button
                             type="button"
                             className="btn btn-ghost btn-sm"
-                            onClick={() => clearMealSlot(dayIndex, slot)}
+                            onClick={async () => {
+                              setPlanError('')
+                              try {
+                                await clearMealSlot(dayIndex, slot)
+                              } catch (err) {
+                                setPlanError(err.message || 'Could not clear slot')
+                              }
+                            }}
                           >
                             Clear
                           </button>
@@ -75,9 +100,16 @@ export function MealPlanPage() {
                         <select
                           aria-label={`Choose recipe ${slot} day ${dayIndex}`}
                           defaultValue=""
-                          onChange={(e) => {
+                          onChange={async (e) => {
                             const v = e.target.value
-                            if (v) setMealSlot(dayIndex, slot, v)
+                            e.target.value = ''
+                            if (!v) return
+                            setPlanError('')
+                            try {
+                              await setMealSlot(dayIndex, slot, v)
+                            } catch (err) {
+                              setPlanError(err.message || 'Could not save slot')
+                            }
                           }}
                         >
                           <option value="">—</option>

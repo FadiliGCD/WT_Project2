@@ -1,4 +1,3 @@
-// Client-side form validation
 export function validateLogin(values) {
   const errors = []
   if (!values.username?.trim()) errors.push('Username is required.')
@@ -10,6 +9,7 @@ export function validateRegister(values) {
   const errors = []
   const u = values.username?.trim() || ''
   if (u.length < 3) errors.push('Username must be at least 3 characters.')
+  if (u.length > 40) errors.push('Username must be at most 40 characters.')
   if (!/^[a-zA-Z0-9_]+$/.test(u)) {
     errors.push('Username may only contain letters, numbers, and underscores.')
   }

@@ -1,15 +1,10 @@
-/**
- * Navbar.jsx
- * Primary navigation using React Router (relative paths — no env needed per Assignment 3 note).
- * External “marketing” link example uses REACT_APP_CLIENT_URL as required by the checklist.
- */
+// Primary navigation using React Router (Assignment 4: same-origin /api behind session).
 
 import { Link } from 'react-router-dom'
 import { useAppData } from '../context/AppDataContext'
 
 export function Navbar() {
   const { currentUser, logout } = useAppData()
-  const base = process.env.REACT_APP_CLIENT_URL || ''
 
   return (
     <header className="site-header">
@@ -24,13 +19,16 @@ export function Navbar() {
           <Link to="/favourites">Favourites</Link>
           <Link to="/meal-plan">Meal plan</Link>
           <Link to="/profile">Profile</Link>
-          {base ? (
-            <a href={`${base}/recipes`}>Recipes (full URL demo)</a>
-          ) : null}
           {currentUser ? (
             <>
               <span className="nav-user">Hi, {currentUser.username}</span>
-              <button type="button" className="btn btn-ghost" onClick={logout}>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => {
+                  void logout()
+                }}
+              >
                 Log out
               </button>
             </>

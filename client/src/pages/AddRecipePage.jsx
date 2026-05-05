@@ -1,7 +1,6 @@
 /**
  * ASSIGNMENT 3 — VIEW 4: Create / publish recipe (Assignment 1 functionality 3).
- * Intended backend: POST `${process.env.REACT_APP_API_URL}/api/recipes` with JSON body.
- * On success here we only push to local context and navigate — no fetch.
+ * Assignment 4: POST /api/recipes (session required).
  */
 
 import { useState } from 'react'
@@ -27,7 +26,7 @@ export function AddRecipePage() {
   const [errors, setErrors] = useState([])
   const [savedMsg, setSavedMsg] = useState('')
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault()
     setSavedMsg('')
     const v = validateRecipeForm({
@@ -39,10 +38,10 @@ export function AddRecipePage() {
     setErrors(v)
     if (v.length) return
     if (!currentUser) {
-      setErrors(['Please log in first (mock: use Auth page).'])
+      setErrors(['Please log in first.'])
       return
     }
-    const id = addRecipe({
+    const payload = {
       title: form.title.trim(),
       category: form.category.trim() || 'General',
       dietaryTags: form.dietaryTags.trim(),
@@ -51,19 +50,24 @@ export function AddRecipePage() {
       servings: Number(form.servings),
       ingredients: form.ingredients.trim(),
       instructions: form.instructions.trim(),
-    })
-    setSavedMsg('Recipe saved locally. Intended: POST /api/recipes')
-    setForm(emptyForm)
-    setTimeout(() => navigate(`/recipes/${id}`), 400)
+    }
+    try {
+      const id = await addRecipe(payload)
+      setSavedMsg('Recipe published.')
+      setForm(emptyForm)
+      setTimeout(() => navigate(`/recipes/${id}`), 400)
+    } catch (err) {
+      const body = err.body
+      if (body && Array.isArray(body.errors)) setErrors(body.errors)
+      else setErrors([err.message || 'Could not save recipe.'])
+    }
   }
 
   return (
     <section className="page add-recipe-page">
       <div className="card">
         <h1>Add recipe</h1>
-        <p className="hint">
-          Client validation mirrors server rules. Intended: POST JSON to /api/recipes (see README).
-        </p>
+        <p className="hint">Client validation mirrors server rules; recipe is saved via POST /api/recipes.</p>
         {errors.length > 0 && (
           <ul className="error-list" role="alert">
             {errors.map((err) => (
@@ -144,7 +148,7 @@ export function AddRecipePage() {
           </label>
           <div className="card-actions">
             <button type="submit" className="btn btn-primary">
-              Publish (mock)
+              Publish
             </button>
             <Link to="/recipes" className="btn btn-ghost">
               Cancel

@@ -1,4 +1,8 @@
-// JSON REST API 
+/**
+ * api.js
+ * JSON REST API for the same domain logic (Assignment 2: GET/POST/PUT/PATCH/DELETE + hosted API).
+ */
+
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
@@ -20,7 +24,17 @@ const { startOfWeekMonday, toInputDateString } = require('../utils/week');
 
 const apiRouter = express.Router();
 
-// Auth session cookie still used after login via same browser
+// ----- Auth (session cookie still used after login via same browser) -----
+
+/** Current session user for React bootstrap (no auth required). */
+apiRouter.get('/auth/me', (req, res) => {
+  if (!req.session.userId) {
+    return res.json({ user: null });
+  }
+  return res.json({
+    user: { id: req.session.userId, username: req.session.username },
+  });
+});
 
 apiRouter.post('/auth/register', async (req, res) => {
   const errors = validateRegister({
@@ -74,7 +88,7 @@ apiRouter.post('/auth/logout', (req, res) => {
   });
 });
 
-// Recipes CRUD 
+// ----- Recipes CRUD -----
 
 apiRouter.get('/recipes', async (req, res) => {
   const q = asTrimmedString(req.query.q);
@@ -135,7 +149,7 @@ apiRouter.put('/recipes/:id', requireAuth, async (req, res) => {
   }
 });
 
-// PATCH: Merge only provided fields after full validation on merged object
+/** PATCH partial update: merge only provided fields after full validation on merged object. */
 apiRouter.patch('/recipes/:id', requireAuth, async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: 'Not found' });
   try {
@@ -181,7 +195,7 @@ apiRouter.delete('/recipes/:id', requireAuth, async (req, res) => {
   }
 });
 
-// Favourites
+// ----- Favourites -----
 
 apiRouter.get('/favourites', requireAuth, async (req, res) => {
   try {
@@ -219,7 +233,7 @@ apiRouter.delete('/favourites/:recipeId', requireAuth, async (req, res) => {
   res.status(204).end();
 });
 
-// Meal plan
+// ----- Meal plan -----
 
 apiRouter.get('/meal-plan', requireAuth, async (req, res) => {
   let anchor = req.query.week ? new Date(String(req.query.week)) : new Date();

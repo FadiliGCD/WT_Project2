@@ -1,9 +1,4 @@
-/**
- * ASSIGNMENT 3 — VIEW 3: Browse & search recipes (Assignment 1 functionality 2).
- * Intended backend: GET `${process.env.REACT_APP_API_URL}/api/recipes?q=&category=`
- * Filtering is applied client-side to mock data for responsive UX without network calls.
- * "Layout change": toggling advanced filters panel (user interaction → different layout).
- */
+// Assignment 4: list from GET /api/recipes; filters applied client-side on loaded data.
 
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -38,9 +33,7 @@ export function RecipesPage() {
     <section className="page recipes-page">
       <header className="page-header">
         <h1>Recipes</h1>
-        <p className="hint">
-          Mock list — intended backend: GET /api/recipes (see REACT_APP_API_URL in .env.example).
-        </p>
+        <p className="hint">Recipes from GET /api/recipes; filters run in the browser.</p>
       </header>
       <div className={`filters-panel card ${showAdvanced ? 'filters-expanded' : ''}`}>
         <div className="filters-row">
@@ -99,7 +92,13 @@ export function RecipesPage() {
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
-                  onClick={() => toggleFavourite(r._id)}
+                  onClick={async () => {
+                    try {
+                      await toggleFavourite(r._id)
+                    } catch (e) {
+                      window.alert(e.message || 'Could not update favourites')
+                    }
+                  }}
                 >
                   {favouriteIds.has(r._id) ? '★ Saved' : '☆ Save'}
                 </button>

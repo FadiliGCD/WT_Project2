@@ -1,8 +1,4 @@
-/**
- * ASSIGNMENT 3 — VIEW 5: Saved favourites (Assignment 1 functionality 4).
- * Intended backend: GET `${process.env.REACT_APP_API_URL}/api/favourites`
- * List is derived from mock `favouriteIds` + `recipes` in context.
- */
+// Assignment 4: GET /api/favourites + local recipe list for links.
 
 import { Link } from 'react-router-dom'
 import { useAppData } from '../context/AppDataContext'
@@ -28,7 +24,7 @@ export function FavouritesPage() {
   return (
     <section className="page favourites-page">
       <h1>My favourites</h1>
-      <p className="hint">Intended: GET {process.env.REACT_APP_API_URL || 'API_URL'}/api/favourites</p>
+      <p className="hint">Saved recipes from GET /api/favourites.</p>
       <ul className="recipe-grid">
         {saved.map((r) => (
           <li key={r._id} className="recipe-card card">
@@ -38,7 +34,13 @@ export function FavouritesPage() {
             <button
               type="button"
               className="btn btn-ghost btn-sm"
-              onClick={() => toggleFavourite(r._id)}
+              onClick={async () => {
+                try {
+                  await toggleFavourite(r._id)
+                } catch (e) {
+                  window.alert(e.message || 'Could not remove favourite')
+                }
+              }}
             >
               Remove
             </button>

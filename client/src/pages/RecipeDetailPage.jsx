@@ -1,23 +1,51 @@
-/**
- * ASSIGNMENT 3 — VIEW: Recipe detail (Assignment 1 — view full recipe, save, plan).
- * Intended backend:
- *   GET `${process.env.REACT_APP_API_URL}/api/recipes/:id`
- *   POST `${process.env.REACT_APP_API_URL}/api/favourites` (body: recipeId)
- * Data resolved from shared mock context by route param.
- */
-
+// Assignment 4: GET /api/recipes/:id when not already in context (deep link / refresh).
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { apiFetch } from '../api/http'
 import { useAppData } from '../context/AppDataContext'
 
 export function RecipeDetailPage() {
   const { id } = useParams()
-  const { recipes, favouriteIds, toggleFavourite, currentUser } = useAppData()
+  const { recipes, favouriteIds, toggleFavourite, currentUser, mergeRecipe } = useAppData()
+  const [loadError, setLoadError] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const hasRecipe = useMemo(() => recipes.some((r) => r._id === id), [recipes, id])
   const recipe = recipes.find((r) => r._id === id)
+
+  useEffect(() => {
+    if (!id || hasRecipe) return
+    let cancelled = false
+    setLoading(true)
+    setLoadError(null)
+    ;(async () => {
+      try {
+        const raw = await apiFetch(`/api/recipes/${encodeURIComponent(id)}`)
+        if (cancelled) return
+        mergeRecipe(raw)
+      } catch (e) {
+        if (!cancelled) setLoadError(e.message || 'Not found')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [id, hasRecipe, mergeRecipe])
+
+  if (loading && !recipe) {
+    return (
+      <section className="page">
+        <p>Loading recipe…</p>
+      </section>
+    )
+  }
 
   if (!recipe) {
     return (
       <section className="page">
-        <p>Recipe not found.</p>
+        <p>{loadError || 'Recipe not found.'}</p>
         <Link to="/recipes">Back to list</Link>
       </section>
     )
@@ -49,7 +77,13 @@ export function RecipeDetailPage() {
           <button
             type="button"
             className="btn btn-secondary"
-            onClick={() => toggleFavourite(recipe._id)}
+            onClick={async () => {
+              try {
+                await toggleFavourite(recipe._id)
+              } catch (e) {
+                window.alert(e.message || 'Could not update favourites')
+              }
+            }}
           >
             {favouriteIds.has(recipe._id) ? 'Remove from favourites' : 'Add to favourites'}
           </button>

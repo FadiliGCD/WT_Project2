@@ -1,10 +1,4 @@
-/**
- * ASSIGNMENT 3 — VIEW 1: Landing / home page (Assignment 1: entry point, orient user).
- * Intended backend: none required; links route to React pages. Marketing URL pattern:
- *   `${process.env.REACT_APP_CLIENT_URL}/recipes`
- * No HTTP requests are performed (Assignment 3 requirement).
- */
-
+// Assignment 4: static entry; other views load data from /api when visited.
 import { Link } from 'react-router-dom'
 import { useAppData } from '../context/AppDataContext'
 
@@ -16,7 +10,7 @@ export function HomePage() {
       <div className="hero-card card">
         <h1>Plan meals. Share recipes.</h1>
         <p className="lead">
-          Discover dishes, save favourites, and lay out your week — one calm place for home
+          Discover dishes, save favourites, and lay out your week, one calm place for home
           cooks (Assignment 1 vision).
         </p>
         <div className="hero-actions">
@@ -36,9 +30,9 @@ export function HomePage() {
         </div>
       </div>
       <ul className="feature-list">
-        <li>Browse &amp; search (mock data)</li>
-        <li>Add recipes with client validation</li>
-        <li>Favourites &amp; weekly planner (local state)</li>
+        <li>Browse &amp; search recipes from the API</li>
+        <li>Add recipes with client and server validation</li>
+        <li>Favourites &amp; weekly meal plan persisted on the server</li>
       </ul>
     </section>
   )

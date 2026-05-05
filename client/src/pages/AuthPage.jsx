@@ -1,20 +1,21 @@
-/**
- * ASSIGNMENT 3 — VIEW 2: Authentication (Assignment 1 functionality 1 — register & login).
- * Intended backend mapping:
- *   POST `${process.env.REACT_APP_API_URL}/api/auth/register`
- *   POST `${process.env.REACT_APP_API_URL}/api/auth/login`
- *   POST `/logout` (web) or session cookie clear — not invoked here per A3.
- * Submit handlers only update React context after client-side validation passes.
- */
+// Assignment 4: POST /api/auth/login and /api/auth/register with session cookie.
 
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAppData } from '../context/AppDataContext'
 import { validateLogin, validateRegister } from '../utils/clientValidation'
 
+function formatApiError(err) {
+  const body = err.body
+  if (body && Array.isArray(body.errors)) return body.errors
+  if (body && Array.isArray(body.error)) return [body.error]
+  if (typeof body?.error === 'string') return [body.error]
+  return [err.message || 'Request failed.']
+}
+
 export function AuthPage() {
   const navigate = useNavigate()
-  const { login } = useAppData()
+  const { login, register } = useAppData()
   const [mode, setMode] = useState('login')
   const [errors, setErrors] = useState([])
   const [success, setSuccess] = useState('')
@@ -26,26 +27,39 @@ export function AuthPage() {
     confirmPassword: '',
   })
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     setSuccess('')
     const v = validateLogin(loginForm)
     setErrors(v)
     if (v.length) return
-    login(loginForm.username.trim())
-    setSuccess('Welcome back! (mock session — no API call)')
-    setTimeout(() => navigate('/recipes'), 600)
+    try {
+      await login(loginForm.username.trim(), loginForm.password)
+      setSuccess('Welcome back!')
+      setTimeout(() => navigate('/recipes'), 400)
+    } catch (err) {
+      setErrors(formatApiError(err))
+    }
   }
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault()
     setSuccess('')
     const v = validateRegister(registerForm)
     setErrors(v)
     if (v.length) return
-    login(registerForm.username.trim())
-    setSuccess('Account created locally. (mock — no API call)')
-    setTimeout(() => navigate('/recipes'), 600)
+    try {
+      await register({
+        username: registerForm.username.trim(),
+        email: registerForm.email.trim(),
+        password: registerForm.password,
+        confirmPassword: registerForm.confirmPassword,
+      })
+      setSuccess('Account created. You are now logged in.')
+      setTimeout(() => navigate('/recipes'), 400)
+    } catch (err) {
+      setErrors(formatApiError(err))
+    }
   }
 
   return (
@@ -53,11 +67,7 @@ export function AuthPage() {
       <div className="card auth-card">
         <h1>{mode === 'login' ? 'Log in' : 'Register'}</h1>
         <p className="hint">
-          Client validation only. Intended API:{' '}
-          <code>
-            {process.env.REACT_APP_API_URL || 'REACT_APP_API_URL'}/api/auth/
-            {mode === 'login' ? 'login' : 'register'}
-          </code>
+          Session-based auth via <code>/api/auth/{mode === 'login' ? 'login' : 'register'}</code>.
         </p>
         <div className="tab-row" role="tablist">
           <button
