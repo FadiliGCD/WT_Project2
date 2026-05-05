@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: recipe-meal-planner-wt2
+    runtime: node
+    buildCommand: cd client && npm install && npm run build && cd ../server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false
+      - key: REACT_APP_CLIENT_URL
+        sync: false
+      - key: REACT_APP_API_URL
+        sync: false

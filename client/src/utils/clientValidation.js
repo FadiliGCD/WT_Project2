@@ -1,13 +1,4 @@
-/**
- * clientValidation.js
- * Client-side form validation for Assignment 3 rubric (mirrors server rules conceptually).
- */
-
-/**
- * Validates login fields.
- * @param {{ username: string, password: string }} values
- * @returns {string[]} error messages for display
- */
+// Client-side form validation
 export function validateLogin(values) {
   const errors = []
   if (!values.username?.trim()) errors.push('Username is required.')
@@ -15,11 +6,6 @@ export function validateLogin(values) {
   return errors
 }
 
-/**
- * Validates registration fields.
- * @param {{ username: string, email: string, password: string, confirmPassword: string }} values
- * @returns {string[]}
- */
 export function validateRegister(values) {
   const errors = []
   const u = values.username?.trim() || ''
@@ -38,11 +24,6 @@ export function validateRegister(values) {
   return errors
 }
 
-/**
- * Validates recipe form (create / update).
- * @param {*} values
- * @returns {string[]}
- */
 export function validateRecipeForm(values) {
   const errors = []
   if (!values.title?.trim()) errors.push('Title is required.')
