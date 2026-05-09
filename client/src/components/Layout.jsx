@@ -24,22 +24,13 @@ export function Layout({ children }) {
         {bootstrapError && (
           <div className="card" role="alert" style={{ margin: '1rem', borderColor: 'var(--danger, #c00)' }}>
             <strong>Connection issue:</strong> {bootstrapError}
-            <p className="hint">Start the API (e.g. <code>npm start</code> in <code>server/</code>) and use Vite dev proxy for <code>/api</code>.</p>
+            <p className="hint">Make sure the backend server is running, then refresh the page.</p>
           </div>
         )}
         {children}
       </main>
       <footer className="site-footer">
-        <p>
-          Recipe Meal Planner — WT Assignment 4. API: same-origin <code>/api</code>
-          {process.env.REACT_APP_API_URL ? (
-            <>
-              {' '}
-              or <code>{process.env.REACT_APP_API_URL}</code>
-            </>
-          ) : null}
-          .
-        </p>
+        <p>Recipe Meal Planner.</p>
       </footer>
     </>
   )

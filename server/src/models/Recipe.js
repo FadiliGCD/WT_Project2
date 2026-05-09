@@ -7,6 +7,7 @@ const recipeSchema = new mongoose.Schema(
     // Reference to User who created the recipe
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     title: { type: String, required: true, trim: true, maxlength: 200 },
+    ingredients: { type: String, required: true, trim: true, maxlength: 20000 },
     instructions: { type: String, required: true, trim: true, maxlength: 20000 },
     category: { type: String, trim: true, maxlength: 80, default: 'General' },
     dietaryTags: { type: String, trim: true, maxlength: 200, default: '' },

@@ -18,7 +18,6 @@ export function AuthPage() {
   const { login, register } = useAppData()
   const [mode, setMode] = useState('login')
   const [errors, setErrors] = useState([])
-  const [success, setSuccess] = useState('')
   const [loginForm, setLoginForm] = useState({ username: '', password: '' })
   const [registerForm, setRegisterForm] = useState({
     username: '',
@@ -29,14 +28,12 @@ export function AuthPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    setSuccess('')
     const v = validateLogin(loginForm)
     setErrors(v)
     if (v.length) return
     try {
       await login(loginForm.username.trim(), loginForm.password)
-      setSuccess('Welcome back!')
-      setTimeout(() => navigate('/recipes'), 400)
+      navigate('/', { replace: true })
     } catch (err) {
       setErrors(formatApiError(err))
     }
@@ -44,7 +41,6 @@ export function AuthPage() {
 
   const handleRegister = async (e) => {
     e.preventDefault()
-    setSuccess('')
     const v = validateRegister(registerForm)
     setErrors(v)
     if (v.length) return
@@ -55,8 +51,7 @@ export function AuthPage() {
         password: registerForm.password,
         confirmPassword: registerForm.confirmPassword,
       })
-      setSuccess('Account created. You are now logged in.')
-      setTimeout(() => navigate('/recipes'), 400)
+      navigate('/', { replace: true })
     } catch (err) {
       setErrors(formatApiError(err))
     }
@@ -66,9 +61,6 @@ export function AuthPage() {
     <section className="page auth-page">
       <div className="card auth-card">
         <h1>{mode === 'login' ? 'Log in' : 'Register'}</h1>
-        <p className="hint">
-          Session-based auth via <code>/api/auth/{mode === 'login' ? 'login' : 'register'}</code>.
-        </p>
         <div className="tab-row" role="tablist">
           <button
             type="button"
@@ -78,7 +70,6 @@ export function AuthPage() {
             onClick={() => {
               setMode('login')
               setErrors([])
-              setSuccess('')
             }}
           >
             Login
@@ -91,7 +82,6 @@ export function AuthPage() {
             onClick={() => {
               setMode('register')
               setErrors([])
-              setSuccess('')
             }}
           >
             Register
@@ -104,7 +94,6 @@ export function AuthPage() {
             ))}
           </ul>
         )}
-        {success && <p className="success-msg">{success}</p>}
         {mode === 'login' ? (
           <form onSubmit={handleLogin} className="stack">
             <label>

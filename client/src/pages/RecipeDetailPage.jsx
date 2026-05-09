@@ -1,14 +1,26 @@
 // Assignment 4: GET /api/recipes/:id when not already in context (deep link / refresh).
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { apiFetch } from '../api/http'
 import { useAppData } from '../context/AppDataContext'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 
 export function RecipeDetailPage() {
   const { id } = useParams()
-  const { recipes, favouriteIds, toggleFavourite, currentUser, mergeRecipe } = useAppData()
+  const navigate = useNavigate()
+  const {
+    recipes,
+    favouriteIds,
+    toggleFavourite,
+    currentUser,
+    mergeRecipe,
+    deleteRecipe,
+  } = useAppData()
   const [loadError, setLoadError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
 
   const hasRecipe = useMemo(() => recipes.some((r) => r._id === id), [recipes, id])
   const recipe = recipes.find((r) => r._id === id)
@@ -51,6 +63,12 @@ export function RecipeDetailPage() {
     )
   }
 
+  const isOwner = Boolean(currentUser && recipe.authorId && currentUser.id === recipe.authorId)
+  const ingredientsText =
+    recipe.ingredients != null && String(recipe.ingredients).trim()
+      ? String(recipe.ingredients).trim()
+      : null
+
   return (
     <article className="page recipe-detail card">
       <header>
@@ -63,7 +81,19 @@ export function RecipeDetailPage() {
       {recipe.dietaryTags && <p className="tags">Dietary: {recipe.dietaryTags}</p>}
       <section>
         <h2>Ingredients</h2>
-        <pre className="recipe-body">{recipe.ingredients}</pre>
+        {ingredientsText ? (
+          <pre className="recipe-body">{ingredientsText}</pre>
+        ) : (
+          <p className="hint">
+            No ingredients on file for this recipe.
+            {isOwner && (
+              <>
+                {' '}
+                <Link to={`/recipes/${recipe._id}/edit`}>Add ingredients</Link>.
+              </>
+            )}
+          </p>
+        )}
       </section>
       <section>
         <h2>Instructions</h2>
@@ -73,6 +103,23 @@ export function RecipeDetailPage() {
         <Link to="/recipes" className="btn btn-ghost">
           ← All recipes
         </Link>
+        {isOwner && (
+          <>
+            <Link to={`/recipes/${recipe._id}/edit`} className="btn btn-primary">
+              Edit recipe
+            </Link>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => {
+                setDeleteError('')
+                setConfirmOpen(true)
+              }}
+            >
+              Delete recipe
+            </button>
+          </>
+        )}
         {currentUser && (
           <button
             type="button"
@@ -89,6 +136,37 @@ export function RecipeDetailPage() {
           </button>
         )}
       </div>
+      {deleteError && (
+        <p className="error-list" role="alert" style={{ marginTop: '1rem' }}>
+          {deleteError}
+        </p>
+      )}
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete recipe?"
+        message={`“${recipe.title}” will be permanently removed. This cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Keep recipe"
+        destructive
+        busy={deleting}
+        onCancel={() => {
+          if (!deleting) setConfirmOpen(false)
+        }}
+        onConfirm={async () => {
+          setDeleting(true)
+          setDeleteError('')
+          try {
+            await deleteRecipe(recipe._id)
+            setConfirmOpen(false)
+            navigate('/recipes')
+          } catch (e) {
+            setDeleteError(e.message || 'Could not delete recipe')
+            setConfirmOpen(false)
+          } finally {
+            setDeleting(false)
+          }
+        }}
+      />
     </article>
   )
 }

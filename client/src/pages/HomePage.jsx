@@ -7,11 +7,16 @@ export function HomePage() {
 
   return (
     <section className="page home-page">
+      {currentUser && (
+        <p className="home-greeting" role="status">
+          Welcome back, <strong>{currentUser.username}</strong>
+        </p>
+      )}
       <div className="hero-card card">
         <h1>Plan meals. Share recipes.</h1>
         <p className="lead">
-          Discover dishes, save favourites, and lay out your week, one calm place for home
-          cooks (Assignment 1 vision).
+          Discover new dishes, save your favourites, and organise the whole week in one calm
+          place made for home cooks.
         </p>
         <div className="hero-actions">
           <Link to="/recipes" className="btn btn-primary">
@@ -30,9 +35,9 @@ export function HomePage() {
         </div>
       </div>
       <ul className="feature-list">
-        <li>Browse &amp; search recipes from the API</li>
-        <li>Add recipes with client and server validation</li>
-        <li>Favourites &amp; weekly meal plan persisted on the server</li>
+        <li>Browse and search a growing collection of recipes</li>
+        <li>Add your own recipes with quick, friendly validation</li>
+        <li>Save favourites and lay out your weekly meal plan</li>
       </ul>
     </section>
   )

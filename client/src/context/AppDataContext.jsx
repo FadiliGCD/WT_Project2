@@ -128,6 +128,33 @@ export function AppDataProvider({ children }) {
     [refreshRecipes]
   )
 
+  const updateRecipe = useCallback(
+    async (recipeId, recipe) => {
+      await apiFetch(`/api/recipes/${encodeURIComponent(recipeId)}`, {
+        method: 'PUT',
+        body: JSON.stringify(recipe),
+      })
+      await refreshRecipes()
+    },
+    [refreshRecipes]
+  )
+
+  const deleteRecipe = useCallback(
+    async (recipeId) => {
+      await apiFetch(`/api/recipes/${encodeURIComponent(recipeId)}`, { method: 'DELETE' })
+      if (currentUser) {
+        try {
+          const favs = await apiFetch('/api/favourites')
+          setFavouriteIds(new Set((favs || []).map((r) => String(r._id))))
+        } catch {
+          /* ignore */
+        }
+      }
+      await refreshRecipes()
+    },
+    [refreshRecipes, currentUser]
+  )
+
   const toggleFavourite = useCallback(
     async (recipeId) => {
       if (!currentUser) return
@@ -223,6 +250,8 @@ export function AppDataProvider({ children }) {
       register,
       logout,
       addRecipe,
+      updateRecipe,
+      deleteRecipe,
       toggleFavourite,
       setMealSlot,
       clearMealSlot,
@@ -244,6 +273,8 @@ export function AppDataProvider({ children }) {
       register,
       logout,
       addRecipe,
+      updateRecipe,
+      deleteRecipe,
       toggleFavourite,
       setMealSlot,
       clearMealSlot,

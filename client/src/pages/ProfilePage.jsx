@@ -3,13 +3,6 @@
 import { Link } from 'react-router-dom'
 import { useAppData } from '../context/AppDataContext'
 
-function authorId(r) {
-  const a = r.author
-  if (a && typeof a === 'object' && a._id) return String(a._id)
-  if (a) return String(a)
-  return ''
-}
-
 export function ProfilePage() {
   const { currentUser, recipes } = useAppData()
 
@@ -27,7 +20,7 @@ export function ProfilePage() {
     )
   }
 
-  const mine = recipes.filter((r) => authorId(r) === currentUser.id)
+  const mine = recipes.filter((r) => r.authorId === currentUser.id)
 
   return (
     <section className="page profile-page">
@@ -36,7 +29,7 @@ export function ProfilePage() {
         <p>
           <strong>{currentUser.username}</strong>
         </p>
-        <p className="hint">Recipes below are filtered to your account (author id matches session).</p>
+        <p className="hint">Here are the recipes you have published.</p>
         <Link to="/add-recipe" className="btn btn-primary">
           Add recipe
         </Link>

@@ -24,7 +24,7 @@ export function FavouritesPage() {
   return (
     <section className="page favourites-page">
       <h1>My favourites</h1>
-      <p className="hint">Saved recipes from GET /api/favourites.</p>
+      <p className="hint">Recipes you have saved for quick access.</p>
       <ul className="recipe-grid">
         {saved.map((r) => (
           <li key={r._id} className="recipe-card card">

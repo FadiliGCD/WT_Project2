@@ -3,10 +3,12 @@
  * Assignment 4: POST /api/recipes (session required).
  */
 
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAppData } from '../context/AppDataContext'
 import { validateRecipeForm } from '../utils/clientValidation'
+import { apiFetch } from '../api/http'
+import { normalizeRecipe } from '../utils/recipeShape'
 
 const emptyForm = {
   title: '',
@@ -21,10 +23,61 @@ const emptyForm = {
 
 export function AddRecipePage() {
   const navigate = useNavigate()
-  const { addRecipe, currentUser } = useAppData()
+  const { id: editId } = useParams()
+  const { addRecipe, updateRecipe, currentUser, mergeRecipe, bootstrapped } = useAppData()
   const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState([])
   const [savedMsg, setSavedMsg] = useState('')
+  const [loadError, setLoadError] = useState(null)
+  const [loadingRecipe, setLoadingRecipe] = useState(Boolean(editId))
+
+  useEffect(() => {
+    if (!editId) {
+      setLoadingRecipe(false)
+      return
+    }
+    if (!bootstrapped) return
+
+    let cancelled = false
+    setLoadError(null)
+    setLoadingRecipe(true)
+    ;(async () => {
+      try {
+        if (!currentUser) {
+          if (!cancelled) {
+            setLoadError('Please log in to edit recipes.')
+            setLoadingRecipe(false)
+          }
+          return
+        }
+        const raw = await apiFetch(`/api/recipes/${encodeURIComponent(editId)}`)
+        if (cancelled) return
+        mergeRecipe(raw)
+        const r = normalizeRecipe(raw)
+        if (String(r.authorId) !== String(currentUser.id)) {
+          setLoadError('You can only edit your own recipes.')
+          return
+        }
+        setForm({
+          title: r.title ?? '',
+          category: r.category ?? 'General',
+          dietaryTags: r.dietaryTags ?? '',
+          prepTimeMinutes: String(r.prepTimeMinutes ?? 15),
+          cookTimeMinutes: String(r.cookTimeMinutes ?? 20),
+          servings: String(r.servings ?? 4),
+          ingredients: r.ingredients ?? '',
+          instructions: r.instructions ?? '',
+        })
+      } catch (e) {
+        if (!cancelled) setLoadError(e.message || 'Could not load recipe.')
+      } finally {
+        if (!cancelled) setLoadingRecipe(false)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [editId, bootstrapped, currentUser, mergeRecipe])
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -52,10 +105,16 @@ export function AddRecipePage() {
       instructions: form.instructions.trim(),
     }
     try {
-      const id = await addRecipe(payload)
-      setSavedMsg('Recipe published.')
-      setForm(emptyForm)
-      setTimeout(() => navigate(`/recipes/${id}`), 400)
+      if (editId) {
+        await updateRecipe(editId, payload)
+        setSavedMsg('Recipe updated.')
+        setTimeout(() => navigate(`/recipes/${editId}`), 400)
+      } else {
+        const id = await addRecipe(payload)
+        setSavedMsg('Recipe published.')
+        setForm(emptyForm)
+        setTimeout(() => navigate(`/recipes/${id}`), 400)
+      }
     } catch (err) {
       const body = err.body
       if (body && Array.isArray(body.errors)) setErrors(body.errors)
@@ -63,11 +122,36 @@ export function AddRecipePage() {
     }
   }
 
+  if (editId && loadError) {
+    return (
+      <section className="page add-recipe-page">
+        <div className="card">
+          <p role="alert">{loadError}</p>
+          <Link to="/recipes" className="btn btn-ghost">
+            Back to recipes
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  if (editId && loadingRecipe) {
+    return (
+      <section className="page add-recipe-page">
+        <p>Loading recipe…</p>
+      </section>
+    )
+  }
+
   return (
     <section className="page add-recipe-page">
       <div className="card">
-        <h1>Add recipe</h1>
-        <p className="hint">Client validation mirrors server rules; recipe is saved via POST /api/recipes.</p>
+        <h1>{editId ? 'Edit recipe' : 'Add recipe'}</h1>
+        <p className="hint">
+          {editId
+            ? 'Update your recipe and save your changes.'
+            : 'Fill in the details below. Your recipe is validated before it is saved.'}
+        </p>
         {errors.length > 0 && (
           <ul className="error-list" role="alert">
             {errors.map((err) => (
@@ -148,9 +232,9 @@ export function AddRecipePage() {
           </label>
           <div className="card-actions">
             <button type="submit" className="btn btn-primary">
-              Publish
+              {editId ? 'Save changes' : 'Publish'}
             </button>
-            <Link to="/recipes" className="btn btn-ghost">
+            <Link to={editId ? `/recipes/${editId}` : '/recipes'} className="btn btn-ghost">
               Cancel
             </Link>
           </div>

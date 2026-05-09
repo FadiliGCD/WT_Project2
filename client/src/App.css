@@ -40,6 +40,15 @@
   align-items: flex-end;
 }
 
+.filters-row label,
+.stack-horizontal label,
+.week-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
 .grow {
   flex: 1;
   min-width: 12rem;

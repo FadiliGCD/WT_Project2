@@ -1,4 +1,4 @@
-// Primary navigation using React Router (Assignment 4: same-origin /api behind session).
+// Primary navigation using React Router (Assignment 4: same origin /api behind session).
 
 import { Link } from 'react-router-dom'
 import { useAppData } from '../context/AppDataContext'
@@ -12,8 +12,14 @@ export function Navbar() {
     <header className="site-header">
       <div className="nav-inner">
         <Link to="/" className="brand">
-        <img src={logo} alt="Recipe Planner logo" width={200} height={200} style={{ marginRight: '0.5rem' }}/>
-          Recipe Planner
+          <img
+            src={logo}
+            alt=""
+            className="brand-logo"
+            width={40}
+            height={40}
+          />
+          <span className="brand-text">Recipe Planner</span>
         </Link>
         <nav className="nav-links" aria-label="Main">
           <Link to="/">Home</Link>

@@ -25,6 +25,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/recipes" element={<RecipesPage />} />
+          <Route path="/recipes/:id/edit" element={<AddRecipePage />} />
           <Route path="/recipes/:id" element={<RecipeDetailPage />} />
           <Route path="/add-recipe" element={<AddRecipePage />} />
           <Route path="/favourites" element={<FavouritesPage />} />

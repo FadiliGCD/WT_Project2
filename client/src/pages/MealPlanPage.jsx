@@ -32,7 +32,9 @@ export function MealPlanPage() {
     <section className="page meal-plan-page">
       <header className="page-header">
         <h1>Meal plan</h1>
-        <p className="hint">Week anchored to Monday <code>{mealPlanWeekStart}</code> (server normalises dates).</p>
+        <p className="hint">
+          Your plan follows the week starting Monday (<strong>{mealPlanWeekStart}</strong>).
+        </p>
         <label className="week-picker">
           Jump to week
           <input
@@ -112,7 +114,7 @@ export function MealPlanPage() {
                             }
                           }}
                         >
-                          <option value="">—</option>
+                          <option value="">Pick a recipe</option>
                           {recipes.map((r) => (
                             <option key={r._id} value={r._id}>
                               {r.title}
